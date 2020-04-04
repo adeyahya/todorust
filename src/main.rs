@@ -1,4 +1,6 @@
 use std::io;
+#[macro_use] extern crate prettytable;
+use prettytable::{Table, Row, Cell};
 
 struct Todo {
     id: i16,
@@ -45,8 +47,6 @@ fn main() {
                 }
             }
         }
-
-        print_todos(&todos);
     }
 }
 
@@ -54,12 +54,14 @@ fn mark_done(todos: &mut Vec<Todo>, num: i16) {
     if let Some(todo) = todos.iter_mut().find(|todo| todo.id == num) {
         todo.completed = true;
     }
+    print_todos(&todos);
 }
 
 fn remove_todo(todos: &mut Vec<Todo>, num: i16) {
     if let Some(todo) = todos.iter_mut().find(|todo| todo.id == num) {
         todo.deleted = true;
     }
+    print_todos(&todos);
 }
 
 fn add_todo(todos: &mut Vec<Todo>, title: &str) {
@@ -71,15 +73,27 @@ fn add_todo(todos: &mut Vec<Todo>, title: &str) {
         completed: false,
         deleted: false,
     });
+
+    print_todos(&todos);
 }
 
 fn print_todos(todos: &Vec<Todo>) {
+    let mut table = Table::new();
+
+    table.add_row(row!["[ ]", "ID", "TITLE"]);
+
     for todo in todos {
         if !todo.deleted {
             let done = if todo.completed { "✔" } else { " " };
-            println!("[{}] {} {}", done, todo.id, todo.title);
+            table.add_row(Row::new(vec![
+                Cell::new(done),
+                Cell::new(&todo.id.to_string()),
+                Cell::new(&todo.title.to_string())
+            ]));
         }
     }
+
+    table.printstd();
 }
 
 fn invalid_command(command: &str) {
