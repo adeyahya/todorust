@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 prettytable-rs = "^0.8"
+rusqlite = "0.21.0"
